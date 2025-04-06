@@ -3,7 +3,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY target/Sample-0.0.1-SNAPSHOT.jar /app/Sample.jar
+COPY target/sample-0.0.1-SNAPSHOT.jar /app/sample.jar
 
 EXPOSE 8080
 

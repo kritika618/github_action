@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-prod
+  namespace: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-prod
+  template:
+    metadata:
+      labels:
+        app: sample-prod
+    spec:
+      containers:
+        - name: sample-container
+          image: 273354669111.dkr.ecr.ap-south-1.amazonaws.com/sample_app:latest
+          ports:
+            - containerPort: 8083  # App inside container listens on 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "256Mi"
+              cpu: "1000m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-prod
+  namespace: prod
+spec:
+  selector:
+    app: sample-prod
+  ports:
+    - protocol: TCP
+      port: 8083        # Expose service on port 8081
+      targetPort: 8083  # Forward traffic to container port 8081
+  type: LoadBalancer

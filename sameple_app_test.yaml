@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-test
+  namespace: qa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-test
+  template:
+    metadata:
+      labels:
+        app: sample-test
+    spec:
+      containers:
+        - name: sample-container
+          image: 273354669111.dkr.ecr.ap-south-1.amazonaws.com/sample_app:latest
+          ports:
+            - containerPort: 8082  # App inside container listens on 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "qa"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "256Mi"
+              cpu: "1000m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-test
+  namespace: qa
+spec:
+  selector:
+    app: sample-test
+  ports:
+    - protocol: TCP
+      port: 8082        # Expose service on port 8081
+      targetPort: 8082  # Forward traffic to container port 8081
+  type: LoadBalancer
